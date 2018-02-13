@@ -114,15 +114,15 @@ public abstract class BaseRecycleCursorAdapter<VH extends RecyclerView.ViewHolde
      */
     @Override
     public long getItemId(int position) {
-        if (mDataValid && mCursor != null) {
+        if (mDataValid && mCursor != null && mCursor.getCount() - 1 >= position) {
             if (mCursor.moveToPosition(position)) {
-                return mCursor.getLong(mRowIDColumn);
-            } else {
-                return 0;
+                //暂时规避超出范围的错误
+                if (mCursor.getColumnCount() - 1 >= mRowIDColumn && mRowIDColumn >= 0) {
+                    return mCursor.getLong(mRowIDColumn);
+                }
             }
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     @Override
