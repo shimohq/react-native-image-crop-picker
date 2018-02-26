@@ -114,7 +114,9 @@ public class AlbumListActivity extends BasePickerActivity {
         Uri images = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 
         // Make the query.
-        Cursor cur = managedQuery(images,
+        //managedQuery 是过时方法，并且在4.0之后是与activity生命周期绑定的，所以之前报错就是由于主动释放游标所引起
+        //这里更新为新的兼容方式，主动释放游标
+        Cursor cur = getContentResolver().query(images,
                 projection, // Which columns to return
                 null,       // Which rows to return (all rows)
                 null,       // Selection arguments (none)
