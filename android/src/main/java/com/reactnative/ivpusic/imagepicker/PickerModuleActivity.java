@@ -44,15 +44,6 @@ public class PickerModuleActivity extends BasePickerActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED) {
-            finish();
-            return;
-        }
-        if (resultCode == UCrop.RESULT_ERROR) {
-            Toast.makeText(getApplicationContext(), R.string.no_surpport, Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
         final PickerModule pickerModule = PickerModule.getModue();
         if (pickerModule == null) {
             finish();
@@ -60,6 +51,12 @@ public class PickerModuleActivity extends BasePickerActivity {
         }
         final Activity activity = pickerModule.getActivity();
         if (activity == null) {
+            finish();
+            return;
+        }
+        if (resultCode == UCrop.RESULT_ERROR) {
+            pickerModule.onActivityResult(activity, requestCode, Activity.RESULT_CANCELED, null);
+            Toast.makeText(getApplicationContext(), R.string.no_surpport, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
