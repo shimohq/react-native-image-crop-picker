@@ -334,7 +334,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
             }
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
                 Intent intent = new Intent(activity, PickerModuleActivity.class);
-                intent.putExtra(URI_KEY,mCameraCaptureURI);
+                intent.putExtra(URI_KEY, mCameraCaptureURI);
                 intent.putExtra(REQUEST_CODE_KEY, requestCode);
                 activity.startActivity(intent);
             } else {
@@ -640,10 +640,20 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
     public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == IMAGE_PICKER_REQUEST) {
             imagePickerResult(activity, requestCode, resultCode, data);
+            finishPickerModuleActivityWhenNotCropping(activity);
         } else if (requestCode == CAMERA_PICKER_REQUEST) {
             cameraPickerResult(activity, requestCode, resultCode, data);
+            finishPickerModuleActivityWhenNotCropping(activity);
         } else if (requestCode == UCrop.REQUEST_CROP) {
             croppingResult(activity, requestCode, resultCode, data);
+        }
+    }
+
+    private void finishPickerModuleActivityWhenNotCropping(Activity activity) {
+        if (!cropping) {
+            if (activity instanceof PickerModuleActivity) {
+                activity.finish();
+            }
         }
     }
 
