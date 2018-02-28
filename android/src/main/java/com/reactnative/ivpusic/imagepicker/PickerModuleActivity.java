@@ -5,8 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.widget.Toast;
 
 import com.reactnative.ivpusic.imagepicker.activity.BasePickerActivity;
+import com.yalantis.ucrop.UCrop;
 
 /**
  * Created by song on 2018/1/6.
@@ -42,6 +44,15 @@ public class PickerModuleActivity extends BasePickerActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_CANCELED) {
+            finish();
+            return;
+        }
+        if (resultCode == UCrop.RESULT_ERROR) {
+            Toast.makeText(getApplicationContext(), R.string.no_surpport, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         final PickerModule pickerModule = PickerModule.getModue();
         if (pickerModule == null) {
             finish();
@@ -52,7 +63,11 @@ public class PickerModuleActivity extends BasePickerActivity {
             finish();
             return;
         }
-        pickerModule.onActivityResult(activity, requestCode, resultCode, data);
-        finish();
+        if (requestCode == PickerModule.CAMERA_PICKER_REQUEST || requestCode == PickerModule.IMAGE_PICKER_REQUEST) {
+            pickerModule.onActivityResult(this, requestCode, resultCode, data);
+        } else {
+            pickerModule.onActivityResult(activity, requestCode, resultCode, data);
+            finish();
+        }
     }
 }

@@ -8,4 +8,5 @@
     <string name="bracket_num">(%1$d)</string>
     <string name="error_maximun_nine_photos">最多选择 %1$d 张图片</string>
     <string name="general_all_pictures">所有图片</string>
+    <string name="no_surpport">暂不支持此图片格式</string>
 </resources>
