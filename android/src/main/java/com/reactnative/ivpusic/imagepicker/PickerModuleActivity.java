@@ -46,10 +46,12 @@ public class PickerModuleActivity extends BasePickerActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
             finish();
+            return;
         }
         if (resultCode == UCrop.RESULT_ERROR) {
             Toast.makeText(getApplicationContext(), R.string.no_surpport, Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
         final PickerModule pickerModule = PickerModule.getModue();
         if (pickerModule == null) {
