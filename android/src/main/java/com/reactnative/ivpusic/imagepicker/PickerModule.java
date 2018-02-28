@@ -52,8 +52,8 @@ import static com.reactnative.ivpusic.imagepicker.PickerModuleActivity.URI_KEY;
 
 class PickerModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
-    private static final int IMAGE_PICKER_REQUEST = 61110;
-    private static final int CAMERA_PICKER_REQUEST = 61111;
+    protected static final int IMAGE_PICKER_REQUEST = 61110;
+    protected static final int CAMERA_PICKER_REQUEST = 61111;
     private static final int ALBUM_LIST_REQUEST = 61112;
     private static final String E_ACTIVITY_DOES_NOT_EXIST = "E_ACTIVITY_DOES_NOT_EXIST";
 
