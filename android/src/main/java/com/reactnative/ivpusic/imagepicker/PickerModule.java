@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.util.Base64;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Callback;
@@ -338,6 +339,8 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                 intent.putExtra(REQUEST_CODE_KEY, requestCode);
                 activity.startActivity(intent);
             } else {
+                cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                cameraIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCameraCaptureURI);
                 activity.startActivityForResult(cameraIntent, requestCode);
             }
@@ -628,6 +631,9 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                 } catch (Exception ex) {
                     resultCollector.notifyProblem(E_NO_IMAGE_DATA_FOUND, ex.getMessage());
                 }
+            } else if (resultCode == UCrop.RESULT_ERROR) {
+                Toast.makeText(getReactApplicationContext(), R.string.no_surpport, Toast.LENGTH_SHORT).show();
+                resultCollector.notifyProblem(E_PICKER_CANCELLED_KEY, "unsurpport format");
             } else {
                 resultCollector.notifyProblem(E_NO_IMAGE_DATA_FOUND, "Cannot find image data");
             }
