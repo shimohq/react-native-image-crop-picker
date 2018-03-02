@@ -62,6 +62,9 @@ public class PickerModuleActivity extends BasePickerActivity {
         }
         if (requestCode == PickerModule.CAMERA_PICKER_REQUEST || requestCode == PickerModule.IMAGE_PICKER_REQUEST) {
             pickerModule.onActivityResult(this, requestCode, resultCode, data);
+            if (resultCode == RESULT_CANCELED) {
+                finish();
+            }
         } else {
             pickerModule.onActivityResult(activity, requestCode, resultCode, data);
             finish();
