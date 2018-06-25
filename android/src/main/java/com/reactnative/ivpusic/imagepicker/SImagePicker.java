@@ -131,9 +131,10 @@ public class SImagePicker {
     public void forResult(int requestCode) {
         if (pickerConfig == null) {
             try {
-                throw new IllegalArgumentException("you must call init() first");
+                throw new IllegalArgumentException("you must call SImagePicker(Object) first");
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
+                return;
             }
         }
         Intent intent = new Intent();
@@ -147,6 +148,14 @@ public class SImagePicker {
         intent.putExtra(CropImageActivity.PARAM_AVATAR_PATH, avatarFilePath);
         intent.putExtra(PhotoPickerActivity.PARAM_ALBUM_NAME, albumName);
         intent.putExtra(PhotoPickerActivity.PARAM_BUCKET_ID, bucketId);
+        if(activityWeakReference==null&&fragmentWeakReference==null) {
+            try {
+                throw new IllegalArgumentException("you must call from() first");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
         if (activityWeakReference.get() != null) {
             intent.setClass(activityWeakReference.get(), PhotoPickerActivity.class);
             activityWeakReference.get().startActivityForResult(intent, requestCode);
