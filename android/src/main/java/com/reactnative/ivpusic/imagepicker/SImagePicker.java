@@ -13,6 +13,7 @@ import com.reactnative.ivpusic.imagepicker.util.SystemUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 
@@ -32,7 +33,8 @@ public class SImagePicker {
     private static PickerConfig pickerConfig;
 
     private Fragment fragment;
-    private Activity activity;
+    private WeakReference<Activity> activityWeakReference;
+    private WeakReference<Fragment> fragmentWeakReference;
     private int maxCount = 1;
     private int pickMode = MODE_IMAGE;
     private int rowCount = 4;
@@ -45,11 +47,11 @@ public class SImagePicker {
     private FileChooseInterceptor fileChooseInterceptor;
 
     private SImagePicker(Fragment fragment) {
-        this.fragment = fragment;
+        this.fragmentWeakReference = new WeakReference(fragment);
     }
 
     private SImagePicker(Activity activity) {
-        this.activity = activity;
+        this.activityWeakReference = new WeakReference(activity);
     }
 
     public static SImagePicker from(Fragment fragment) {
@@ -128,7 +130,11 @@ public class SImagePicker {
 
     public void forResult(int requestCode) {
         if (pickerConfig == null) {
-            throw new IllegalArgumentException("you must call init() first");
+            try {
+                throw new IllegalArgumentException("you must call init() first");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
         Intent intent = new Intent();
         intent.putExtra(PhotoPickerActivity.PARAM_MAX_COUNT, maxCount);
@@ -141,14 +147,18 @@ public class SImagePicker {
         intent.putExtra(CropImageActivity.PARAM_AVATAR_PATH, avatarFilePath);
         intent.putExtra(PhotoPickerActivity.PARAM_ALBUM_NAME, albumName);
         intent.putExtra(PhotoPickerActivity.PARAM_BUCKET_ID, bucketId);
-        if (activity != null) {
-            intent.setClass(activity, PhotoPickerActivity.class);
-            activity.startActivityForResult(intent, requestCode);
-        } else if (fragment != null) {
+        if (activityWeakReference.get() != null) {
+            intent.setClass(activityWeakReference.get(), PhotoPickerActivity.class);
+            activityWeakReference.get().startActivityForResult(intent, requestCode);
+        } else if (fragmentWeakReference.get() != null) {
             intent.setClass(fragment.getActivity(), PhotoPickerActivity.class);
-            fragment.startActivityForResult(intent, requestCode);
+            fragmentWeakReference.get().startActivityForResult(intent, requestCode);
         } else {
-            throw new IllegalArgumentException("you must call from() first");
+            try {
+                throw new IllegalArgumentException("you must call from() first");
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
 

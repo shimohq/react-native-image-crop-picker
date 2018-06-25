@@ -125,6 +125,7 @@ public class AlbumListActivity extends BasePickerActivity {
 
         //        Log.i("ListingImages"," query count=" + cur.getCount());
 
+        if (cur != null) return;
         if (cur.moveToFirst()) {
             String id;
             String bucketId;
