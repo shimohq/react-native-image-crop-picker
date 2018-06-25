@@ -3,8 +3,10 @@ package com.reactnative.ivpusic.imagepicker;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.reactnative.ivpusic.imagepicker.activity.CropImageActivity;
@@ -32,7 +34,6 @@ public class SImagePicker {
 
     private static PickerConfig pickerConfig;
 
-    private Fragment fragment;
     private WeakReference<Activity> activityWeakReference;
     private WeakReference<Fragment> fragmentWeakReference;
     private int maxCount = 1;
@@ -45,13 +46,16 @@ public class SImagePicker {
     @StringRes
     int pickRes = R.string.general_send;
     private FileChooseInterceptor fileChooseInterceptor;
+    private boolean isFragment;
 
     private SImagePicker(Fragment fragment) {
         this.fragmentWeakReference = new WeakReference(fragment);
+        isFragment = true;
     }
 
     private SImagePicker(Activity activity) {
         this.activityWeakReference = new WeakReference(activity);
+        isFragment = false;
     }
 
     public static SImagePicker from(Fragment fragment) {
@@ -129,14 +133,44 @@ public class SImagePicker {
     }
 
     public void forResult(int requestCode) {
-        if (pickerConfig == null) {
+        if (pickerConfig == null ||
+                (isFragment && fragmentWeakReference == null)
+                || (activityWeakReference == null)) {
             try {
-                throw new IllegalArgumentException("you must call SImagePicker(Object) first");
+                throw new IllegalArgumentException("you must call SImagePicker(Object) and from() first");
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
                 return;
             }
         }
+        if (isFragment) {
+            final Fragment fragment = fragmentWeakReference.get();
+            if (fragment != null) {
+                final FragmentActivity activity = fragment.getActivity();
+                if (activity != null) {
+                    Intent intent = getIntent();
+                    intent.setClass(activity, PhotoPickerActivity.class);
+                    fragment.startActivityForResult(intent, requestCode);
+                    return;
+                }
+            }
+        } else {
+            if (activityWeakReference.get() != null) {
+                Intent intent = getIntent();
+                intent.setClass(activityWeakReference.get(), PhotoPickerActivity.class);
+                activityWeakReference.get().startActivityForResult(intent, requestCode);
+                return;
+            }
+        }
+        try {
+            throw new IllegalArgumentException("you must call from() first");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @NonNull
+    private Intent getIntent() {
         Intent intent = new Intent();
         intent.putExtra(PhotoPickerActivity.PARAM_MAX_COUNT, maxCount);
         intent.putExtra(PhotoPickerActivity.PARAM_MODE, pickMode);
@@ -148,27 +182,7 @@ public class SImagePicker {
         intent.putExtra(CropImageActivity.PARAM_AVATAR_PATH, avatarFilePath);
         intent.putExtra(PhotoPickerActivity.PARAM_ALBUM_NAME, albumName);
         intent.putExtra(PhotoPickerActivity.PARAM_BUCKET_ID, bucketId);
-        if(activityWeakReference==null&&fragmentWeakReference==null) {
-            try {
-                throw new IllegalArgumentException("you must call from() first");
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        if (activityWeakReference.get() != null) {
-            intent.setClass(activityWeakReference.get(), PhotoPickerActivity.class);
-            activityWeakReference.get().startActivityForResult(intent, requestCode);
-        } else if (fragmentWeakReference.get() != null) {
-            intent.setClass(fragment.getActivity(), PhotoPickerActivity.class);
-            fragmentWeakReference.get().startActivityForResult(intent, requestCode);
-        } else {
-            try {
-                throw new IllegalArgumentException("you must call from() first");
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-        }
+        return intent;
     }
 
 }
