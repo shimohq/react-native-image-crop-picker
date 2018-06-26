@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.reactnative.ivpusic.imagepicker.activity.BasePickerActivity;
 import com.reactnative.ivpusic.imagepicker.activity.PhotoPickerActivity;
@@ -125,7 +126,11 @@ public class AlbumListActivity extends BasePickerActivity {
 
         //        Log.i("ListingImages"," query count=" + cur.getCount());
 
-        if (cur != null) return;
+        if (cur == null) {
+            Toast.makeText(getAppContext(), "读取相册失败，请重新进入", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
         if (cur.moveToFirst()) {
             String id;
             String bucketId;
