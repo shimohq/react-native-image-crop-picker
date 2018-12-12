@@ -17,7 +17,9 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '8.0'
   
-  s.source_files = 'ios/**/*.{h,m,mm}'
+  s.source_files = 'ios/*.{h,m,mm}', 'ios/UIImage-Resize/*.{h,m,mm}'
+
+  s.vendored_frameworks = 'ios/ImageCropPickerSDK/*.framework'
   
   s.dependency 'React'
 
