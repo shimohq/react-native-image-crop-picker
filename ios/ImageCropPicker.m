@@ -477,13 +477,20 @@ RCT_EXPORT_METHOD(openCropper:(NSDictionary *)options
                      requestImageDataForAsset:phAsset
                      options:options
                      resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-
                          dispatch_async(dispatch_get_main_queue(), ^{
                              [lock lock];
                              ImageResult *imageResult;
                              NSString *filePath;
                              if (imageData) {
-                                 imageResult = [self.compression compressImage:[UIImage imageWithData:imageData] withOptions:self.options];
+                                 UIImage *image;
+                                 if ([dataUTI isEqualToString:@"public.heif"] || [dataUTI isEqualToString:@"public.heic"]) {
+                                     CIImage *ciImage = [CIImage imageWithData:imageData];
+                                     CIContext *context = [CIContext context];
+                                     image = [UIImage imageWithData:[context JPEGRepresentationOfImage:ciImage colorSpace:ciImage.colorSpace options:@{}]];
+                                 } else {
+                                     image = [UIImage imageWithData:imageData];
+                                 }
+                                 imageResult = [self.compression compressImage:image withOptions:self.options];
                                  filePath = [self persistFile:imageResult.data];
                              }
                              
@@ -725,3 +732,4 @@ RCT_EXPORT_METHOD(openCropper:(NSDictionary *)options
 }
 
 @end
+
